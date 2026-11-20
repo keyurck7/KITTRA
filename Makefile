@@ -33,7 +33,7 @@ bench: ## simulation speed on this machine
 	$(PY) scripts/benchmark_sim.py
 
 ros-build: ## build the ROS 2 workspace (source /opt/ros/jazzy/setup.bash and the venv first)
-	cd ros2_ws && colcon build --symlink-install
+	cd ros2_ws && $(PY) -m colcon build --symlink-install
 
 sim: ## simulated cell in RViz (idle)
 	ros2 launch kittra_bringup sim.launch.py

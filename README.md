@@ -160,10 +160,12 @@ Headless machines (WSL2 without WSLg, servers, Colab): `export MUJOCO_GL=egl` (o
 
 ### 4. ROS 2 workspace
 
-Build with the venv active so the nodes run with the Python that has `kittra_sim`:
+Build with the venv active and run colcon through the venv's Python, so the nodes use the
+interpreter that has `kittra_sim` and MuJoCo (plain `colcon` would use `/usr/bin/python3`):
 
 ```bash
-cd ros2_ws && colcon build --symlink-install && source install/setup.bash
+source .venv/bin/activate
+cd ros2_ws && python -m colcon build --symlink-install && source install/setup.bash
 ```
 
 ### 5. Docker (alternative)
