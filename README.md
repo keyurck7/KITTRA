@@ -280,14 +280,15 @@ pytest -m "not slow" -v && pytest -m slow -v
 
 ### Phase 1 results
 
-> Produced by `make expert` and `make bench`; fill in from `results/phase1/*.json`.
+> Produced by `make expert` and `make bench` (MuJoCo 3.17, laptop CPU under WSL2); raw data in `results/phase1/`.
 
 | Metric | Value |
 |---|---|
-| Scripted expert success rate, nominal (50 episodes, 95 % CI) | _TBD_ |
-| Scripted expert success rate, randomized (50 episodes, 95 % CI) | _TBD_ |
-| Mean episode length (successful episodes) | _TBD_ steps |
-| Simulation speed, state-only / with two 128 px cameras (laptop CPU) | _TBD_ / _TBD_ × real time |
+| Scripted expert success rate, nominal (50 episodes) | **100 %** (50/50), 95 % CI [92.9, 100] |
+| Scripted expert success rate, randomized (50 episodes) | **100 %** (50/50), 95 % CI [92.9, 100] |
+| Mean episode length (successful episodes) | 186 steps nominal / 187.4 steps randomized (≈ 6.2 s) |
+| IK failures over 100 episodes | 0 |
+| Simulation speed, state-only / with two 128 px cameras (laptop CPU) | 58.6 / 1.3 × real time |
 | ROS 2 bridge `/joint_states` rate (`ros2 topic hz`) | _TBD_ Hz |
 
 Demo video: _add link_
