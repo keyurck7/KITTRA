@@ -1,0 +1,467 @@
+{
+  "summary": {
+    "config": "randomized",
+    "episodes": 50,
+    "success_rate": 1.0,
+    "success_ci95": [
+      0.9286499658256813,
+      1.0
+    ],
+    "mean_length_successful": 187.38,
+    "drop_rate": 0.0,
+    "total_ik_failures": 0,
+    "sim_speed_x_realtime": 37.76938133215028
+  },
+  "episodes": [
+    {
+      "seed": 0,
+      "success": true,
+      "length": 187,
+      "dropped": false,
+      "placement_error_mm": 0.7287130846734984,
+      "ik_failures": 0,
+      "unstable": false
+    },
+    {
+      "seed": 1,
+      "success": true,
+      "length": 187,
+      "dropped": false,
+      "placement_error_mm": 1.523563128909073,
+      "ik_failures": 0,
+      "unstable": false
+    },
+    {
+      "seed": 2,
+      "success": true,
+      "length": 189,
+      "dropped": false,
+      "placement_error_mm": 1.191950093548449,
+      "ik_failures": 0,
+      "unstable": false
+    },
+    {
+      "seed": 3,
+      "success": true,
+      "length": 188,
+      "dropped": false,
+      "placement_error_mm": 1.0564152508478313,
+      "ik_failures": 0,
+      "unstable": false
+    },
+    {
+      "seed": 4,
+      "success": true,
+      "length": 187,
+      "dropped": false,
+      "placement_error_mm": 0.6962735182433808,
+      "ik_failures": 0,
+      "unstable": false
+    },
+    {
+      "seed": 5,
+      "success": true,
+      "length": 188,
+      "dropped": false,
+      "placement_error_mm": 0.8055871500280708,
+      "ik_failures": 0,
+      "unstable": false
+    },
+    {
+      "seed": 6,
+      "success": true,
+      "length": 188,
+      "dropped": false,
+      "placement_error_mm": 0.898206196189489,
+      "ik_failures": 0,
+      "unstable": false
+    },
+    {
+      "seed": 7,
+      "success": true,
+      "length": 186,
+      "dropped": false,
+      "placement_error_mm": 1.1414093911570138,
+      "ik_failures": 0,
+      "unstable": false
+    },
+    {
+      "seed": 8,
+      "success": true,
+      "length": 186,
+      "dropped": false,
+      "placement_error_mm": 0.8691567517140405,
+      "ik_failures": 0,
+      "unstable": false
+    },
+    {
+      "seed": 9,
+      "success": true,
+      "length": 186,
+      "dropped": false,
+      "placement_error_mm": 0.3481566187721661,
+      "ik_failures": 0,
+      "unstable": false
+    },
+    {
+      "seed": 10,
+      "success": true,
+      "length": 187,
+      "dropped": false,
+      "placement_error_mm": 0.9244747319138882,
+      "ik_failures": 0,
+      "unstable": false
+    },
+    {
+      "seed": 11,
+      "success": true,
+      "length": 186,
+      "dropped": false,
+      "placement_error_mm": 0.7307406418323411,
+      "ik_failures": 0,
+      "unstable": false
+    },
+    {
+      "seed": 12,
+      "success": true,
+      "length": 187,
+      "dropped": false,
+      "placement_error_mm": 0.9719117386613882,
+      "ik_failures": 0,
+      "unstable": false
+    },
+    {
+      "seed": 13,
+      "success": true,
+      "length": 188,
+      "dropped": false,
+      "placement_error_mm": 0.7715281678336612,
+      "ik_failures": 0,
+      "unstable": false
+    },
+    {
+      "seed": 14,
+      "success": true,
+      "length": 189,
+      "dropped": false,
+      "placement_error_mm": 0.7620209227647241,
+      "ik_failures": 0,
+      "unstable": false
+    },
+    {
+      "seed": 15,
+      "success": true,
+      "length": 187,
+      "dropped": false,
+      "placement_error_mm": 0.8136836173150598,
+      "ik_failures": 0,
+      "unstable": false
+    },
+    {
+      "seed": 16,
+      "success": true,
+      "length": 189,
+      "dropped": false,
+      "placement_error_mm": 0.8376164757547774,
+      "ik_failures": 0,
+      "unstable": false
+    },
+    {
+      "seed": 17,
+      "success": true,
+      "length": 187,
+      "dropped": false,
+      "placement_error_mm": 0.9669771587170248,
+      "ik_failures": 0,
+      "unstable": false
+    },
+    {
+      "seed": 18,
+      "success": true,
+      "length": 188,
+      "dropped": false,
+      "placement_error_mm": 1.001357914154257,
+      "ik_failures": 0,
+      "unstable": false
+    },
+    {
+      "seed": 19,
+      "success": true,
+      "length": 188,
+      "dropped": false,
+      "placement_error_mm": 0.5800961346385726,
+      "ik_failures": 0,
+      "unstable": false
+    },
+    {
+      "seed": 20,
+      "success": true,
+      "length": 189,
+      "dropped": false,
+      "placement_error_mm": 0.7510377172708527,
+      "ik_failures": 0,
+      "unstable": false
+    },
+    {
+      "seed": 21,
+      "success": true,
+      "length": 188,
+      "dropped": false,
+      "placement_error_mm": 0.5358423043134839,
+      "ik_failures": 0,
+      "unstable": false
+    },
+    {
+      "seed": 22,
+      "success": true,
+      "length": 187,
+      "dropped": false,
+      "placement_error_mm": 0.9916039861474499,
+      "ik_failures": 0,
+      "unstable": false
+    },
+    {
+      "seed": 23,
+      "success": true,
+      "length": 188,
+      "dropped": false,
+      "placement_error_mm": 0.610628504149583,
+      "ik_failures": 0,
+      "unstable": false
+    },
+    {
+      "seed": 24,
+      "success": true,
+      "length": 186,
+      "dropped": false,
+      "placement_error_mm": 0.7581856846728777,
+      "ik_failures": 0,
+      "unstable": false
+    },
+    {
+      "seed": 25,
+      "success": true,
+      "length": 187,
+      "dropped": false,
+      "placement_error_mm": 0.8304431591691804,
+      "ik_failures": 0,
+      "unstable": false
+    },
+    {
+      "seed": 26,
+      "success": true,
+      "length": 187,
+      "dropped": false,
+      "placement_error_mm": 0.7932854923875198,
+      "ik_failures": 0,
+      "unstable": false
+    },
+    {
+      "seed": 27,
+      "success": true,
+      "length": 186,
+      "dropped": false,
+      "placement_error_mm": 1.1533317082957735,
+      "ik_failures": 0,
+      "unstable": false
+    },
+    {
+      "seed": 28,
+      "success": true,
+      "length": 187,
+      "dropped": false,
+      "placement_error_mm": 0.5958047303255981,
+      "ik_failures": 0,
+      "unstable": false
+    },
+    {
+      "seed": 29,
+      "success": true,
+      "length": 189,
+      "dropped": false,
+      "placement_error_mm": 1.361299789319071,
+      "ik_failures": 0,
+      "unstable": false
+    },
+    {
+      "seed": 30,
+      "success": true,
+      "length": 186,
+      "dropped": false,
+      "placement_error_mm": 1.0194387100659976,
+      "ik_failures": 0,
+      "unstable": false
+    },
+    {
+      "seed": 31,
+      "success": true,
+      "length": 189,
+      "dropped": false,
+      "placement_error_mm": 0.722276414767818,
+      "ik_failures": 0,
+      "unstable": false
+    },
+    {
+      "seed": 32,
+      "success": true,
+      "length": 186,
+      "dropped": false,
+      "placement_error_mm": 1.208901134811021,
+      "ik_failures": 0,
+      "unstable": false
+    },
+    {
+      "seed": 33,
+      "success": true,
+      "length": 187,
+      "dropped": false,
+      "placement_error_mm": 0.8382709863536321,
+      "ik_failures": 0,
+      "unstable": false
+    },
+    {
+      "seed": 34,
+      "success": true,
+      "length": 188,
+      "dropped": false,
+      "placement_error_mm": 0.6036798111615107,
+      "ik_failures": 0,
+      "unstable": false
+    },
+    {
+      "seed": 35,
+      "success": true,
+      "length": 188,
+      "dropped": false,
+      "placement_error_mm": 0.6119865009953369,
+      "ik_failures": 0,
+      "unstable": false
+    },
+    {
+      "seed": 36,
+      "success": true,
+      "length": 189,
+      "dropped": false,
+      "placement_error_mm": 1.4981952190746874,
+      "ik_failures": 0,
+      "unstable": false
+    },
+    {
+      "seed": 37,
+      "success": true,
+      "length": 186,
+      "dropped": false,
+      "placement_error_mm": 1.1229849673429682,
+      "ik_failures": 0,
+      "unstable": false
+    },
+    {
+      "seed": 38,
+      "success": true,
+      "length": 188,
+      "dropped": false,
+      "placement_error_mm": 0.6696087514513455,
+      "ik_failures": 0,
+      "unstable": false
+    },
+    {
+      "seed": 39,
+      "success": true,
+      "length": 188,
+      "dropped": false,
+      "placement_error_mm": 0.9673636433319829,
+      "ik_failures": 0,
+      "unstable": false
+    },
+    {
+      "seed": 40,
+      "success": true,
+      "length": 189,
+      "dropped": false,
+      "placement_error_mm": 0.8220765619540836,
+      "ik_failures": 0,
+      "unstable": false
+    },
+    {
+      "seed": 41,
+      "success": true,
+      "length": 187,
+      "dropped": false,
+      "placement_error_mm": 1.0852577278513984,
+      "ik_failures": 0,
+      "unstable": false
+    },
+    {
+      "seed": 42,
+      "success": true,
+      "length": 188,
+      "dropped": false,
+      "placement_error_mm": 1.1314106451123123,
+      "ik_failures": 0,
+      "unstable": false
+    },
+    {
+      "seed": 43,
+      "success": true,
+      "length": 186,
+      "dropped": false,
+      "placement_error_mm": 1.285810255466655,
+      "ik_failures": 0,
+      "unstable": false
+    },
+    {
+      "seed": 44,
+      "success": true,
+      "length": 186,
+      "dropped": false,
+      "placement_error_mm": 0.6271397391350284,
+      "ik_failures": 0,
+      "unstable": false
+    },
+    {
+      "seed": 45,
+      "success": true,
+      "length": 187,
+      "dropped": false,
+      "placement_error_mm": 0.6993953100700653,
+      "ik_failures": 0,
+      "unstable": false
+    },
+    {
+      "seed": 46,
+      "success": true,
+      "length": 189,
+      "dropped": false,
+      "placement_error_mm": 0.552601565978722,
+      "ik_failures": 0,
+      "unstable": false
+    },
+    {
+      "seed": 47,
+      "success": true,
+      "length": 188,
+      "dropped": false,
+      "placement_error_mm": 0.865854180968408,
+      "ik_failures": 0,
+      "unstable": false
+    },
+    {
+      "seed": 48,
+      "success": true,
+      "length": 186,
+      "dropped": false,
+      "placement_error_mm": 0.7272960885137267,
+      "ik_failures": 0,
+      "unstable": false
+    },
+    {
+      "seed": 49,
+      "success": true,
+      "length": 186,
+      "dropped": false,
+      "placement_error_mm": 0.5879666221452233,
+      "ik_failures": 0,
+      "unstable": false
+    }
+  ]
+}

@@ -1,0 +1,62 @@
+{
+  "summary": {
+    "config": "nominal",
+    "episodes": 5,
+    "success_rate": 1.0,
+    "success_ci95": [
+      0.5655085052479191,
+      1.0
+    ],
+    "mean_length_successful": 186.0,
+    "drop_rate": 0.0,
+    "total_ik_failures": 0,
+    "sim_speed_x_realtime": null
+  },
+  "episodes": [
+    {
+      "seed": 0,
+      "success": true,
+      "length": 186,
+      "dropped": false,
+      "placement_error_mm": 0.33947746500067943,
+      "ik_failures": 0,
+      "unstable": false
+    },
+    {
+      "seed": 1,
+      "success": true,
+      "length": 186,
+      "dropped": false,
+      "placement_error_mm": 0.4974026412901285,
+      "ik_failures": 0,
+      "unstable": false
+    },
+    {
+      "seed": 2,
+      "success": true,
+      "length": 186,
+      "dropped": false,
+      "placement_error_mm": 0.43841873208638654,
+      "ik_failures": 0,
+      "unstable": false
+    },
+    {
+      "seed": 3,
+      "success": true,
+      "length": 186,
+      "dropped": false,
+      "placement_error_mm": 0.5427422885942366,
+      "ik_failures": 0,
+      "unstable": false
+    },
+    {
+      "seed": 4,
+      "success": true,
+      "length": 186,
+      "dropped": false,
+      "placement_error_mm": 0.3695815560196216,
+      "ik_failures": 0,
+      "unstable": false
+    }
+  ]
+}
