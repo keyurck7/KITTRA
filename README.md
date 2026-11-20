@@ -291,7 +291,7 @@ pytest -m "not slow" -v && pytest -m slow -v
 | Mean episode length (successful episodes) | 186 steps nominal / 187.4 steps randomized (≈ 6.2 s) |
 | IK failures over 100 episodes | 0 |
 | Simulation speed, state-only / with two 128 px cameras (laptop CPU) | 58.6 / 1.3 × real time |
-| ROS 2 bridge `/joint_states` rate (`ros2 topic hz`) | _TBD_ Hz |
+| ROS 2 bridge `/joint_states` rate (`ros2 topic hz`, RViz and cameras running) | ≈ 29.7 Hz steady (target 30 Hz) |
 
 Demo video: _add link_
 
