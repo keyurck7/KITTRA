@@ -1,0 +1,11 @@
+# Diffusion Policy — passed to `lerobot-train` by scripts/train_lerobot.py.
+policy_type: diffusion
+steps: 100000
+batch_size: 32
+save_freq: 20000
+log_freq: 200
+num_workers: 4
+seed: 1000
+extra_args:
+  - --policy.push_to_hub=false
+  - --policy.crop_shape=[120,120]

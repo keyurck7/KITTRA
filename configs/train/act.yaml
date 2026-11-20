@@ -1,0 +1,13 @@
+# ACT (Action Chunking Transformer) — passed to `lerobot-train` by scripts/train_lerobot.py.
+policy_type: act
+steps: 100000
+batch_size: 8
+save_freq: 20000
+log_freq: 200
+num_workers: 4
+seed: 1000
+# Extra CLI flags appended verbatim. Adjust if your LeRobot version names them differently.
+extra_args:
+  - --policy.push_to_hub=false
+  - --policy.chunk_size=50
+  - --policy.n_action_steps=50

@@ -1,0 +1,3 @@
+name: abl_lighting
+inherit: nominal
+visual: {enabled: true, light_pos_offset: 0.4, light_intensity: [0.5, 1.5]}

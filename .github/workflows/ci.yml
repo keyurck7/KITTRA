@@ -1,0 +1,63 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  tests:
+    name: Python tests (MuJoCo, headless)
+    runs-on: ubuntu-24.04
+    env:
+      MUJOCO_GL: osmesa
+      PYOPENGL_PLATFORM: osmesa
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: System libraries for headless rendering
+        run: sudo apt-get update && sudo apt-get install -y libosmesa6 libgl1
+      - name: Install
+        run: |
+          pip install -r requirements-sim.txt
+          pip install -e .
+      - name: Fast tests
+        run: pytest -m "not slow" -v
+      - name: Slow tests (scripted experts)
+        run: pytest -m slow -v
+      - name: Expert smoke run
+        run: python scripts/run_expert.py --episodes 5 --config randomized
+
+  ros2:
+    name: ROS 2 Jazzy build + bridge smoke test
+    runs-on: ubuntu-24.04
+    container: osrf/ros:jazzy-desktop
+    env:
+      MUJOCO_GL: osmesa
+      PYOPENGL_PLATFORM: osmesa
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Python dependencies
+        run: |
+          apt-get update && apt-get install -y python3-pip libosmesa6
+          pip install --break-system-packages -r requirements-sim.txt
+          pip install --break-system-packages -e .
+      - name: Build workspace
+        run: |
+          source /opt/ros/jazzy/setup.bash
+          cd ros2_ws && colcon build --symlink-install
+      - name: Bridge publishes joint states
+        run: |
+          source /opt/ros/jazzy/setup.bash
+          source ros2_ws/install/setup.bash
+          ros2 launch kittra_bringup sim.launch.py rviz:=false publish_images:=false autopilot:=expert &
+          LAUNCH_PID=$!
+          sleep 15
+          timeout 20 ros2 topic echo --once /joint_states
+          timeout 20 ros2 topic echo --once /kittra/scene_markers > /dev/null
+          kill $LAUNCH_PID

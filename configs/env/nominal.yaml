@@ -1,0 +1,6 @@
+# Nominal condition: perfect sensors and actuators, nominal physics and visuals.
+name: nominal
+task:
+  n_distractors: 2
+  max_episode_steps: 300
+  reward: sparse

@@ -1,0 +1,40 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "kittra"
+version = "0.2.0"
+description = "Language-instructed robotic kitting cell: MuJoCo simulation, imitation learning, RL and ROS 2 integration"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "Keyur Chaudhari" }]
+dependencies = [
+  "mujoco>=3.2,<4",
+  "gymnasium>=1.0,<2",
+  "numpy>=1.26",
+  "scipy>=1.11",
+  "opencv-python-headless>=4.9",
+  "pyyaml>=6.0",
+  "PyOpenGL>=3.1",
+]
+
+[project.optional-dependencies]
+train = ["torch>=2.2", "lerobot>=0.3", "stable-baselines3[extra]>=2.3", "tensorboard", "matplotlib", "pandas"]
+dev = ["pytest>=8.0", "ruff>=0.5"]
+
+[tool.setuptools.packages.find]
+include = ["kittra_sim*", "kittra_learning*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = [
+  "mujoco: needs MuJoCo + Gymnasium",
+  "render: needs an OpenGL context (set MUJOCO_GL=egl or osmesa when headless)",
+  "slow: runs full expert episodes",
+]
+
+[tool.ruff]
+line-length = 120
+target-version = "py310"

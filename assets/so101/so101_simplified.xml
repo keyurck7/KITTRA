@@ -1,0 +1,96 @@
+<!--
+  Simplified SO-101-like 5-DoF arm with a parallel-jaw gripper, built from primitives.
+
+  * Joint names, order and actuation (position-controlled servos) follow the LeRobot SO-101
+    convention: shoulder_pan, shoulder_lift, elbow_flex, wrist_flex, wrist_roll, gripper.
+  * Link lengths are approximations chosen to cover the kitting cell workspace. They are NOT the
+    exact SO-101 dimensions. Phase 3 replaces this file with the official SO-101 description
+    (TheRobotStudio / MuJoCo Menagerie) and re-measures the cell.
+  * Deliberate simplification: the real SO-101 has a rotating jaw. Here the gripper is a
+    parallel-jaw gripper (two coupled slide joints), which gives much more reliable grasps in
+    simulation. The "gripper" joint value is finger travel per side in metres (0 = closed).
+  * Zero configuration: arm stretched horizontally along +x. Positive shoulder_lift / elbow_flex /
+    wrist_flex rotate the next link downwards (right-hand rule about +y).
+
+  The kinematic chain (body positions, joint axes, limits) must stay identical to
+  ros2_ws/src/kittra_description/urdf/kittra_arm.urdf.xacro. tests/test_model_consistency.py checks this.
+-->
+<mujoco model="so101_simplified">
+  <compiler angle="radian" autolimits="true"/>
+
+  <default>
+    <default class="arm">
+      <joint damping="2.0" armature="0.02" frictionloss="0.01"/>
+      <!-- contype 2 / conaffinity 1: links collide with the table and parts, never with each other -->
+      <geom contype="2" conaffinity="1" density="1000" rgba="0.95 0.95 0.92 1"/>
+      <position kp="100" forcerange="-6 6"/>
+    </default>
+    <default class="finger">
+      <joint type="slide" damping="3.0" armature="0.01"/>
+      <geom type="box" contype="1" conaffinity="1" condim="4" density="1000"
+            friction="1.5 0.02 0.0005" solref="0.005 1" rgba="0.15 0.15 0.15 1"/>
+    </default>
+  </default>
+
+  <worldbody>
+    <body name="base" pos="0 0 0">
+      <geom name="base_geom" class="arm" type="cylinder" size="0.045 0.015" pos="0 0 0.015" rgba="0.2 0.2 0.2 1"/>
+
+      <body name="shoulder" pos="0 0 0.03" gravcomp="1">
+        <joint name="shoulder_pan" class="arm" type="hinge" axis="0 0 1" range="-2.0 2.0"/>
+        <geom name="shoulder_geom" class="arm" type="cylinder" size="0.03 0.04" pos="0 0 0.04"/>
+
+        <body name="upper_arm" pos="0 0 0.08" gravcomp="1">
+          <joint name="shoulder_lift" class="arm" type="hinge" axis="0 1 0" range="-1.9 0.6"/>
+          <geom name="upper_arm_geom" class="arm" type="capsule" fromto="0 0 0 0.14 0 0" size="0.018"/>
+
+          <body name="forearm" pos="0.14 0 0" gravcomp="1">
+            <joint name="elbow_flex" class="arm" type="hinge" axis="0 1 0" range="-0.3 2.8"/>
+            <geom name="forearm_geom" class="arm" type="capsule" fromto="0 0 0 0.14 0 0" size="0.016"/>
+
+            <body name="wrist" pos="0.14 0 0" gravcomp="1">
+              <joint name="wrist_flex" class="arm" type="hinge" axis="0 1 0" range="-1.9 1.9"/>
+              <geom name="wrist_geom" class="arm" type="box" size="0.015 0.02 0.018" pos="0.015 0 0"/>
+
+              <body name="gripper" pos="0.03 0 0" gravcomp="1">
+                <joint name="wrist_roll" class="arm" type="hinge" axis="1 0 0" range="-2.9 2.9"/>
+                <geom name="palm_geom" class="arm" type="box" size="0.01 0.04 0.015" pos="0.01 0 0" rgba="0.2 0.2 0.2 1"/>
+                <!-- Tool centre point: between the finger pads -->
+                <site name="tcp" pos="0.05 0 0" size="0.004" rgba="1 0 0 0.6" group="3"/>
+                <!-- Wrist camera looks along the gripper's +x axis (the approach direction) -->
+                <camera name="wrist" pos="0.0 0 0.045" xyaxes="0 -1 0 0.35 0 1" fovy="80"/>
+
+                <body name="finger_left" pos="0 0 0" gravcomp="1">
+                  <joint name="gripper" class="finger" axis="0 1 0" range="0 0.035"/>
+                  <geom name="finger_left_geom" class="finger" size="0.02 0.004 0.012" pos="0.04 0.004 0"/>
+                </body>
+                <body name="finger_right" pos="0 0 0" gravcomp="1">
+                  <joint name="gripper_mirror" class="finger" axis="0 -1 0" range="0 0.035"/>
+                  <geom name="finger_right_geom" class="finger" size="0.02 0.004 0.012" pos="0.04 -0.004 0"/>
+                </body>
+              </body>
+            </body>
+          </body>
+        </body>
+      </body>
+    </body>
+  </worldbody>
+
+  <contact>
+    <exclude body1="finger_left" body2="finger_right"/>
+  </contact>
+
+  <equality>
+    <!-- gripper_mirror = gripper: both fingers move symmetrically -->
+    <joint name="finger_coupling" joint1="gripper_mirror" joint2="gripper" polycoef="0 1 0 0 0" solref="0.005 1"/>
+  </equality>
+
+  <actuator>
+    <position name="shoulder_pan"  class="arm" joint="shoulder_pan"  ctrlrange="-2.0 2.0"/>
+    <position name="shoulder_lift" class="arm" joint="shoulder_lift" ctrlrange="-1.9 0.6"/>
+    <position name="elbow_flex"    class="arm" joint="elbow_flex"    ctrlrange="-0.3 2.8"/>
+    <position name="wrist_flex"    class="arm" joint="wrist_flex"    ctrlrange="-1.9 1.9"/>
+    <position name="wrist_roll"    class="arm" joint="wrist_roll"    ctrlrange="-2.9 2.9" kp="40" forcerange="-2 2"/>
+    <position name="gripper"       joint="gripper" ctrlrange="0 0.035" kp="300" forcerange="-4 4"/>
+  </actuator>
+</mujoco>

@@ -1,0 +1,90 @@
+<!--
+  Kittra kitting cell: table, parts tray, kit box, reject bin, one target part, two distractors,
+  overhead and wrist cameras.
+
+  World frame: robot base at the origin, +x away from the robot, +z up, table top at z = 0.
+  Physics at 480 Hz (timestep 1/480 s) so that 16 substeps give exactly 30 Hz control.
+
+  Collision groups:
+    contype 1 / conaffinity 1 : table, containers, parts, finger pads
+    contype 2 / conaffinity 1 : robot links (collide with group 1 only, not with each other)
+
+  Named sites are the single source of truth for the task geometry used by the Python code:
+    tray_spawn  - area where parts are spawned (box site, size = half extents)
+    kit_area    - inner area of the kit box (success region)
+    kit_slot    - placement target (centre of the kit box floor)
+    reject_area - inner area of the reject bin (used in Phase 4)
+-->
+<mujoco model="kitting_cell">
+  <include file="../so101/so101_simplified.xml"/>
+
+  <option timestep="0.00208333333" integrator="implicitfast" cone="elliptic" impratio="10" noslip_iterations="3"/>
+
+  <visual>
+    <headlight ambient="0.25 0.25 0.25" diffuse="0.35 0.35 0.35" specular="0 0 0"/>
+    <global offwidth="640" offheight="640" azimuth="160" elevation="-30"/>
+    <quality shadowsize="2048"/>
+  </visual>
+
+  <asset>
+    <texture name="skybox" type="skybox" builtin="gradient" rgb1="0.6 0.7 0.8" rgb2="0.1 0.12 0.15" width="256" height="256"/>
+    <texture name="floor_tex" type="2d" builtin="checker" rgb1="0.25 0.27 0.3" rgb2="0.2 0.22 0.25" width="256" height="256"/>
+    <material name="floor_mat" texture="floor_tex" texrepeat="8 8"/>
+  </asset>
+
+  <worldbody>
+    <light name="main_light" pos="0.15 0 1.0" dir="0 0 -1" diffuse="0.7 0.7 0.7" specular="0.2 0.2 0.2" castshadow="true"/>
+    <geom name="floor" type="plane" size="2 2 0.05" pos="0 0 -0.75" material="floor_mat" contype="1" conaffinity="1"/>
+    <geom name="table" type="box" contype="1" conaffinity="1" condim="3" friction="0.8 0.01 0.0001" size="0.4 0.35 0.02" pos="0.2 0 -0.02" rgba="0.78 0.76 0.72 1"/>
+
+    <camera name="overhead" pos="0.15 0 0.55" xyaxes="0 -1 0 1 0 0" fovy="60"/>
+
+    <!-- Parts tray: flat plate, inner half-size 0.06 m, 4 mm rim (top at z = 0.008) so the open fingers
+         pass over the rim when grasping parts near the edge -->
+    <body name="tray" pos="0.17 -0.09 0">
+      <geom name="tray_floor" type="box" contype="1" conaffinity="1" condim="3" friction="0.8 0.01 0.0001" size="0.068 0.068 0.002" pos="0 0 0.002" rgba="0.3 0.35 0.4 1"/>
+      <geom name="tray_wall_px" type="box" contype="1" conaffinity="1" condim="3" friction="0.8 0.01 0.0001" size="0.004 0.068 0.002" pos="0.064 0 0.006" rgba="0.3 0.35 0.4 1"/>
+      <geom name="tray_wall_nx" type="box" contype="1" conaffinity="1" condim="3" friction="0.8 0.01 0.0001" size="0.004 0.068 0.002" pos="-0.064 0 0.006" rgba="0.3 0.35 0.4 1"/>
+      <geom name="tray_wall_py" type="box" contype="1" conaffinity="1" condim="3" friction="0.8 0.01 0.0001" size="0.06 0.004 0.002" pos="0 0.064 0.006" rgba="0.3 0.35 0.4 1"/>
+      <geom name="tray_wall_ny" type="box" contype="1" conaffinity="1" condim="3" friction="0.8 0.01 0.0001" size="0.06 0.004 0.002" pos="0 -0.064 0.006" rgba="0.3 0.35 0.4 1"/>
+      <site name="tray_spawn" type="box" pos="0 0 0.004" size="0.04 0.04 0.001" rgba="0 1 0 0.2" group="4"/>
+    </body>
+
+    <!-- Kit box: inner half-size 0.05 m, wall top at z = 0.024 -->
+    <body name="kit_box" pos="0.17 0.09 0">
+      <geom name="kit_floor" type="box" contype="1" conaffinity="1" condim="3" friction="0.8 0.01 0.0001" size="0.054 0.054 0.002" pos="0 0 0.002" rgba="0.85 0.6 0.2 1"/>
+      <geom name="kit_wall_px" type="box" contype="1" conaffinity="1" condim="3" friction="0.8 0.01 0.0001" size="0.004 0.054 0.01" pos="0.054 0 0.014" rgba="0.85 0.6 0.2 1"/>
+      <geom name="kit_wall_nx" type="box" contype="1" conaffinity="1" condim="3" friction="0.8 0.01 0.0001" size="0.004 0.054 0.01" pos="-0.054 0 0.014" rgba="0.85 0.6 0.2 1"/>
+      <geom name="kit_wall_py" type="box" contype="1" conaffinity="1" condim="3" friction="0.8 0.01 0.0001" size="0.05 0.004 0.01" pos="0 0.054 0.014" rgba="0.85 0.6 0.2 1"/>
+      <geom name="kit_wall_ny" type="box" contype="1" conaffinity="1" condim="3" friction="0.8 0.01 0.0001" size="0.05 0.004 0.01" pos="0 -0.054 0.014" rgba="0.85 0.6 0.2 1"/>
+      <site name="kit_area" type="box" pos="0 0 0.004" size="0.05 0.05 0.001" rgba="1 0.5 0 0.2" group="4"/>
+      <site name="kit_slot" type="cylinder" pos="0 0 0.004" size="0.006 0.0005" rgba="1 0 0 0.5" group="4"/>
+    </body>
+
+    <!-- Reject bin (used from Phase 4): inner half-size 0.04 m -->
+    <body name="reject_bin" pos="0.06 0.18 0">
+      <geom name="reject_floor" type="box" contype="1" conaffinity="1" condim="3" friction="0.8 0.01 0.0001" size="0.044 0.044 0.002" pos="0 0 0.002" rgba="0.7 0.15 0.15 1"/>
+      <geom name="reject_wall_px" type="box" contype="1" conaffinity="1" condim="3" friction="0.8 0.01 0.0001" size="0.004 0.044 0.01" pos="0.044 0 0.014" rgba="0.7 0.15 0.15 1"/>
+      <geom name="reject_wall_nx" type="box" contype="1" conaffinity="1" condim="3" friction="0.8 0.01 0.0001" size="0.004 0.044 0.01" pos="-0.044 0 0.014" rgba="0.7 0.15 0.15 1"/>
+      <geom name="reject_wall_py" type="box" contype="1" conaffinity="1" condim="3" friction="0.8 0.01 0.0001" size="0.04 0.004 0.01" pos="0 0.044 0.014" rgba="0.7 0.15 0.15 1"/>
+      <geom name="reject_wall_ny" type="box" contype="1" conaffinity="1" condim="3" friction="0.8 0.01 0.0001" size="0.04 0.004 0.01" pos="0 -0.044 0.014" rgba="0.7 0.15 0.15 1"/>
+      <site name="reject_area" type="box" pos="0 0 0.004" size="0.04 0.04 0.001" rgba="1 0 0 0.2" group="4"/>
+    </body>
+
+    <!-- Target part: red 3 cm cube (half-size must match TARGET_HALF_SIZE in constants.py) -->
+    <body name="part_target" pos="0.17 -0.09 0.02">
+      <freejoint name="part_target_free"/>
+      <geom name="part_target_geom" contype="1" conaffinity="1" condim="4" friction="1.2 0.02 0.0005" solref="0.005 1" type="box" size="0.015 0.015 0.015" mass="0.02" rgba="0.85 0.12 0.1 1"/>
+    </body>
+
+    <!-- Distractors: must be ignored by the policy -->
+    <body name="part_distractor_0" pos="0.2 -0.06 0.02">
+      <freejoint name="part_distractor_0_free"/>
+      <geom name="part_distractor_0_geom" contype="1" conaffinity="1" condim="4" friction="1.2 0.02 0.0005" solref="0.005 1" type="cylinder" size="0.014 0.015" mass="0.015" rgba="0.1 0.3 0.85 1"/>
+    </body>
+    <body name="part_distractor_1" pos="0.14 -0.12 0.02">
+      <freejoint name="part_distractor_1_free"/>
+      <geom name="part_distractor_1_geom" contype="1" conaffinity="1" condim="4" friction="1.2 0.02 0.0005" solref="0.005 1" type="cylinder" size="0.014 0.015" mass="0.015" rgba="0.15 0.65 0.25 1"/>
+    </body>
+  </worldbody>
+</mujoco>

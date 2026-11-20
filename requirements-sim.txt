@@ -1,0 +1,10 @@
+# Phase 1: simulation only (laptop, no GPU)
+mujoco>=3.2,<4
+gymnasium>=1.0,<2
+numpy>=1.26
+scipy>=1.11
+opencv-python-headless>=4.9
+pyyaml>=6.0
+imageio[ffmpeg]>=2.34
+PyOpenGL>=3.1  # headless rendering backends (MUJOCO_GL=egl or osmesa)
+pytest>=8.0

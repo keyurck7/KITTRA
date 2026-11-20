@@ -1,0 +1,132 @@
+<?xml version="1.0"?>
+<!--
+  URDF of the simplified SO-101-like arm used in simulation, for robot_state_publisher / RViz2.
+  The kinematic chain (joint origins, axes, limits) MUST match assets/so101/so101_simplified.xml;
+  tests/test_model_consistency.py enforces this.
+-->
+<robot name="kittra_so101_simplified">
+  <material name="shell"><color rgba="0.95 0.95 0.92 1"/></material>
+  <material name="dark"><color rgba="0.2 0.2 0.2 1"/></material>
+  <material name="pad"><color rgba="0.15 0.15 0.15 1"/></material>
+
+  <link name="base_link">
+    <visual>
+      <origin xyz="0 0 0.015" rpy="0 0 0"/>
+      <geometry><cylinder radius="0.045" length="0.03"/></geometry>
+      <material name="dark"/>
+    </visual>
+  </link>
+
+  <link name="shoulder_link">
+    <visual>
+      <origin xyz="0 0 0.04" rpy="0 0 0"/>
+      <geometry><cylinder radius="0.03" length="0.08"/></geometry>
+      <material name="shell"/>
+    </visual>
+  </link>
+  <joint name="shoulder_pan" type="revolute">
+    <parent link="base_link"/>
+    <child link="shoulder_link"/>
+    <origin xyz="0 0 0.03" rpy="0 0 0"/>
+    <axis xyz="0 0 1"/>
+    <limit lower="-2.0" upper="2.0" effort="6" velocity="3.0"/>
+  </joint>
+
+  <link name="upper_arm_link">
+    <visual>
+      <origin xyz="0.07 0 0" rpy="0 1.5707963 0"/>
+      <geometry><cylinder radius="0.018" length="0.14"/></geometry>
+      <material name="shell"/>
+    </visual>
+  </link>
+  <joint name="shoulder_lift" type="revolute">
+    <parent link="shoulder_link"/>
+    <child link="upper_arm_link"/>
+    <origin xyz="0 0 0.08" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+    <limit lower="-1.9" upper="0.6" effort="6" velocity="3.0"/>
+  </joint>
+
+  <link name="forearm_link">
+    <visual>
+      <origin xyz="0.07 0 0" rpy="0 1.5707963 0"/>
+      <geometry><cylinder radius="0.016" length="0.14"/></geometry>
+      <material name="shell"/>
+    </visual>
+  </link>
+  <joint name="elbow_flex" type="revolute">
+    <parent link="upper_arm_link"/>
+    <child link="forearm_link"/>
+    <origin xyz="0.14 0 0" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+    <limit lower="-0.3" upper="2.8" effort="6" velocity="3.0"/>
+  </joint>
+
+  <link name="wrist_link">
+    <visual>
+      <origin xyz="0.015 0 0" rpy="0 0 0"/>
+      <geometry><box size="0.03 0.04 0.036"/></geometry>
+      <material name="shell"/>
+    </visual>
+  </link>
+  <joint name="wrist_flex" type="revolute">
+    <parent link="forearm_link"/>
+    <child link="wrist_link"/>
+    <origin xyz="0.14 0 0" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+    <limit lower="-1.9" upper="1.9" effort="6" velocity="3.0"/>
+  </joint>
+
+  <link name="gripper_link">
+    <visual>
+      <origin xyz="0.01 0 0" rpy="0 0 0"/>
+      <geometry><box size="0.02 0.08 0.03"/></geometry>
+      <material name="dark"/>
+    </visual>
+  </link>
+  <joint name="wrist_roll" type="revolute">
+    <parent link="wrist_link"/>
+    <child link="gripper_link"/>
+    <origin xyz="0.03 0 0" rpy="0 0 0"/>
+    <axis xyz="1 0 0"/>
+    <limit lower="-2.9" upper="2.9" effort="2" velocity="3.0"/>
+  </joint>
+
+  <link name="finger_left_link">
+    <visual>
+      <origin xyz="0.04 0.004 0" rpy="0 0 0"/>
+      <geometry><box size="0.04 0.008 0.024"/></geometry>
+      <material name="pad"/>
+    </visual>
+  </link>
+  <joint name="gripper" type="prismatic">
+    <parent link="gripper_link"/>
+    <child link="finger_left_link"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+    <limit lower="0" upper="0.035" effort="4" velocity="0.2"/>
+  </joint>
+
+  <link name="finger_right_link">
+    <visual>
+      <origin xyz="0.04 -0.004 0" rpy="0 0 0"/>
+      <geometry><box size="0.04 0.008 0.024"/></geometry>
+      <material name="pad"/>
+    </visual>
+  </link>
+  <joint name="gripper_mirror" type="prismatic">
+    <parent link="gripper_link"/>
+    <child link="finger_right_link"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <axis xyz="0 -1 0"/>
+    <limit lower="0" upper="0.035" effort="4" velocity="0.2"/>
+    <mimic joint="gripper" multiplier="1" offset="0"/>
+  </joint>
+
+  <link name="tcp_link"/>
+  <joint name="tcp" type="fixed">
+    <parent link="gripper_link"/>
+    <child link="tcp_link"/>
+    <origin xyz="0.05 0 0" rpy="0 0 0"/>
+  </joint>
+</robot>

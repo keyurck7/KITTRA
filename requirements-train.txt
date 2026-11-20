@@ -1,0 +1,9 @@
+# Phase 2: simulation + learning (laptop or Colab/Kaggle). Pin lerobot once your pipeline works.
+-r requirements-sim.txt
+torch>=2.2
+lerobot>=0.3
+stable-baselines3[extra]>=2.3
+tensorboard>=2.15
+wandb>=0.17
+pandas>=2.0
+matplotlib>=3.8

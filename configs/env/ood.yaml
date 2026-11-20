@@ -1,0 +1,28 @@
+# Held-out out-of-distribution condition: every range is wider than anything seen in training.
+# Never use this config for training or for choosing hyperparameters.
+name: ood
+inherit: randomized
+physics:
+  friction: [0.3, 2.0]
+  mass: [0.5, 1.6]
+  damping: [0.6, 1.5]
+  kp: [0.7, 1.3]
+visual:
+  light_pos_offset: 0.45
+  light_intensity: [0.4, 1.7]
+  color_jitter: 0.35
+  target_color_jitter: 0.2
+  cam_pos_offset: 0.03
+  cam_rot_deg: 6.0
+sensor:
+  joint_sigma: 0.01
+  joint_bias: 0.02
+  img_sigma: 14.0
+  blur_p: 0.5
+  blur_max_kernel: 7
+  brightness: 0.35
+  contrast: 0.35
+actuator:
+  min_delay_steps: 2
+  max_delay_steps: 5
+  backlash: 0.02

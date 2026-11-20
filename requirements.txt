@@ -1,0 +1,2 @@
+# Everything that pip installs (ROS 2 itself comes from apt, see README).
+-r requirements-train.txt

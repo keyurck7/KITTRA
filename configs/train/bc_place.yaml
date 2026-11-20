@@ -1,0 +1,11 @@
+# Behaviour cloning baseline for KittraPlace-v0 (same obs/action space as PPO).
+env_config: randomized
+demo_episodes: 300           # scripted-expert episodes to record (successful ones are kept)
+seed: 0
+bc:
+  hidden: [256, 256]
+  lr: 1.0e-3
+  weight_decay: 1.0e-5
+  batch_size: 256
+  epochs: 150
+  val_fraction: 0.1
