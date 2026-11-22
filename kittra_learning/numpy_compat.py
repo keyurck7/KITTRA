@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import contextlib
 import importlib
+import pickle
 import sys
 from pathlib import Path
 from typing import Any, Iterator
@@ -76,9 +77,54 @@ def load_ppo(path: str | Path, env: Any = None, device: str = "cpu", spaces_from
         return PPO.load(str(path), env=env, device=device, custom_objects=custom, **kwargs)
 
 
+class _RNGPlaceholder:
+    """Stands in for a NumPy 2 random generator that NumPy 1.x cannot rebuild."""
+
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        pass
+
+    def __setstate__(self, state: Any) -> None:
+        pass
+
+
+class _CompatUnpickler(pickle.Unpickler):
+    def find_class(self, module: str, name: str):
+        # NumPy 2 pickles generators as (class, (state, seed_seq)); NumPy 1.x only knows names + dicts.
+        if module == "numpy.random._pickle":
+            return _RNGPlaceholder
+        return super().find_class(module, name)
+
+
+def _drop_placeholder_rngs(obj: Any) -> None:
+    """Spaces re-create their RNG lazily when ``_np_random`` is None."""
+    import gymnasium as gym
+
+    def clean(space: Any) -> None:
+        if isinstance(getattr(space, "_np_random", None), _RNGPlaceholder):
+            space._np_random = None
+        subs = getattr(space, "spaces", None)
+        for sub in (subs.values() if isinstance(subs, dict) else subs or ()):
+            clean(sub)
+
+    for key, value in list(vars(obj).items()):
+        if isinstance(value, _RNGPlaceholder):
+            setattr(obj, key, None)
+        elif isinstance(value, gym.spaces.Space):
+            clean(value)
+
+
 def load_vecnormalize(path: str | Path, venv: Any):
-    """``VecNormalize.load`` that works across NumPy versions."""
+    """``VecNormalize.load`` that works across NumPy versions.
+
+    Only the observation/return statistics matter for inference and resuming; saved RNG states
+    of the spaces are dropped when they cannot be rebuilt.
+    """
     from stable_baselines3.common.vec_env import VecNormalize
 
-    with numpy2_pickle_compat():
+    if int(np.__version__.split(".")[0]) >= 2:
         return VecNormalize.load(str(path), venv)
+    with numpy2_pickle_compat(), open(path, "rb") as f:
+        vec_normalize = _CompatUnpickler(f).load()
+    _drop_placeholder_rngs(vec_normalize)
+    vec_normalize.set_venv(venv)
+    return vec_normalize
