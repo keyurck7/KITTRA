@@ -62,19 +62,28 @@ class LeRobotPolicy:
 
 class SB3Policy:
     def __init__(self, path: str | Path, env, device: str = "cpu"):
-        from stable_baselines3 import PPO
-        from stable_baselines3.common.vec_env import DummyVecEnv, VecNormalize
+        import re
+
+        from stable_baselines3.common.vec_env import DummyVecEnv
+
+        from kittra_learning.numpy_compat import load_ppo, load_vecnormalize
 
         path = Path(path)
         zip_path = path if path.suffix == ".zip" else path.with_suffix(".zip")
-        self.model = PPO.load(str(zip_path), device=device)
+        self.model = load_ppo(zip_path, device=device, spaces_from=env)
+        # best_model.zip -> best_model_vecnormalize.pkl; ppo_place_N_steps.zip -> ppo_place_vecnormalize_N_steps.pkl
         stats = zip_path.parent / (zip_path.stem + "_vecnormalize.pkl")
+        m = re.fullmatch(r"(.+)_(\d+)_steps", zip_path.stem)
+        if not stats.exists() and m:
+            stats = zip_path.parent / f"{m.group(1)}_vecnormalize_{m.group(2)}_steps.pkl"
         self.vecnorm = None
         if stats.exists():
             dummy = DummyVecEnv([lambda: env])
-            self.vecnorm = VecNormalize.load(str(stats), dummy)
+            self.vecnorm = load_vecnormalize(stats, dummy)
             self.vecnorm.training = False
             self.vecnorm.norm_reward = False
+        else:
+            print(f"warning: no observation statistics found next to {zip_path.name}; using raw observations")
 
     def reset(self, obs=None, info=None) -> None:
         pass

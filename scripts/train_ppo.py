@@ -30,6 +30,7 @@ from stable_baselines3.common.env_util import make_vec_env
 from stable_baselines3.common.vec_env import DummyVecEnv, SubprocVecEnv, VecNormalize
 
 import kittra_sim  # noqa: F401  (registers KittraPlace-v0)
+from kittra_learning.numpy_compat import load_ppo, load_vecnormalize
 from kittra_sim.factory import make_place_env
 
 TB_DIR = "runs/ppo_place"
@@ -108,9 +109,10 @@ def main() -> None:
 
     if args.resume:
         model_path, stats_path, what = find_resume_point(args.out)
-        venv = VecNormalize.load(str(stats_path), raw_venv)
+        venv = load_vecnormalize(stats_path, raw_venv)
         venv.training, venv.norm_reward = True, True
-        model = PPO.load(str(model_path), env=venv, device=args.device, tensorboard_log=TB_DIR)
+        model = load_ppo(model_path, env=venv, device=args.device, clip_range=cfg["ppo"]["clip_range"],
+                         tensorboard_log=TB_DIR)
         print(f"resuming from {what}: {model.num_timesteps:,} / {total:,} steps done")
     else:
         venv = VecNormalize(raw_venv, norm_obs=True, norm_reward=True, clip_obs=10.0, gamma=cfg["ppo"]["gamma"])
