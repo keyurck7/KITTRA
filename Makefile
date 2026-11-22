@@ -12,8 +12,8 @@ help:
 status: ## what has finished so far and what to run next
 	$(PY) scripts/status.py
 
-install: ## Phase 1 dependencies + editable install
-	$(PY) -m pip install -r requirements-sim.txt && $(PY) -m pip install -e .
+install: ## Phase 1 dependencies + editable install (Ubuntu laptop)
+	$(PY) -m pip install -c constraints-ubuntu24.txt -r requirements-sim.txt && $(PY) -m pip install -c constraints-ubuntu24.txt -e .
 
 install-train: ## Phase 2 dependencies (torch, lerobot, stable-baselines3)
 	$(PY) -m pip install -r requirements-train.txt && $(PY) -m pip install -e .

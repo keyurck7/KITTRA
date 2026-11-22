@@ -1,0 +1,5 @@
+# Keep the venv compatible with Ubuntu 24.04's system Python packages and ROS 2 Jazzy,
+# which are built against NumPy 1.26. Use with:  pip install -c constraints-ubuntu24.txt ...
+numpy>=1.26,<2
+pandas>=2.0,<3
+opencv-python-headless>=4.9,<4.12

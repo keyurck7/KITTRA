@@ -1,8 +1,12 @@
 # Phase 2: simulation + learning (laptop or Colab/Kaggle). Pin lerobot once your pipeline works.
+# On the Ubuntu laptop (venv with --system-site-packages for ROS 2) also pass
+#   -c constraints-ubuntu24.txt   so pip keeps NumPy 1.26, which ROS 2 Jazzy and Ubuntu's SciPy need.
 -r requirements-sim.txt
 torch>=2.2
 lerobot>=0.3
-stable-baselines3[extra]>=2.3
+stable-baselines3>=2.3   # not [extra]: it adds a second OpenCV build and Atari packages we don't use
+tqdm
+rich
 tensorboard>=2.15
 wandb>=0.17
 pandas>=2.0

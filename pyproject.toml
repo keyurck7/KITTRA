@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=68", "wheel"]
+requires = ["setuptools>=77", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -8,7 +8,7 @@ version = "0.2.0"
 description = "Language-instructed robotic kitting cell: MuJoCo simulation, imitation learning, RL and ROS 2 integration"
 readme = "README.md"
 requires-python = ">=3.10"
-license = { text = "MIT" }
+license = "MIT"
 authors = [{ name = "Keyur Chaudhari" }]
 dependencies = [
   "mujoco>=3.2,<4",
@@ -21,7 +21,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-train = ["torch>=2.2", "lerobot>=0.3", "stable-baselines3[extra]>=2.3", "tensorboard", "matplotlib", "pandas"]
+train = ["torch>=2.2", "lerobot>=0.3", "stable-baselines3>=2.3", "tensorboard", "matplotlib", "pandas"]
 dev = ["pytest>=8.0", "ruff>=0.5"]
 
 [tool.setuptools.packages.find]

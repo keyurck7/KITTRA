@@ -150,8 +150,16 @@ ROS 2 Jazzy uses the system Python 3.12, so the venv reuses system packages (mak
 ```bash
 python3 -m venv .venv --system-site-packages
 source .venv/bin/activate
-pip install -r requirements-sim.txt && pip install -e .     # Phase 1
-pip install -r requirements-train.txt                       # Phase 2 (torch, lerobot, stable-baselines3)
+pip install -c constraints-ubuntu24.txt -r requirements-sim.txt && pip install -e .   # Phase 1
+pip install torch --index-url https://download.pytorch.org/whl/cpu                    # CPU PyTorch (laptop)
+pip install -c constraints-ubuntu24.txt "stable-baselines3>=2.3" tqdm rich tensorboard "pandas>=2.0" matplotlib
+```
+
+The constraints file keeps NumPy at 1.26: the venv also sees Ubuntu's system packages (needed for
+`rclpy`), and those, like ROS 2 Jazzy, are built against NumPy 1.x. LeRobot (ACT/Diffusion) is installed
+on the GPU server with `requirements-train.txt`, where no ROS constraint applies.
+
+```bash
 ```
 
 Headless machines (WSL2 without WSLg, servers, Colab): `export MUJOCO_GL=egl` (or `osmesa`).
