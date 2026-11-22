@@ -159,9 +159,6 @@ The constraints file keeps NumPy at 1.26: the venv also sees Ubuntu's system pac
 `rclpy`), and those, like ROS 2 Jazzy, are built against NumPy 1.x. LeRobot (ACT/Diffusion) is installed
 on the GPU server with `requirements-train.txt`, where no ROS constraint applies.
 
-```bash
-```
-
 Headless machines (WSL2 without WSLg, servers, Colab): `export MUJOCO_GL=egl` (or `osmesa`).
 
 > LeRobot changes quickly. All LeRobot calls go through `kittra_learning/lerobot_compat.py`, which handles the 0.3.x and 0.4.x APIs. Once your pipeline works, pin the exact version in `requirements-train.txt`.
