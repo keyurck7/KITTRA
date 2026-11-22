@@ -492,13 +492,19 @@ ros2 launch kittra_bringup sim_policy.launch.py policy_type:=act env_config:=ran
 | ACT | _TBD_ | _TBD_ | _TBD_ |
 | Diffusion Policy | _TBD_ | _TBD_ | _TBD_ |
 
-**Placement skill (success rate / mean placement error)**
+**Placement skill** — success rate with 95 % CI, and mean final placement error; 100 fixed-seed episodes per cell (`results/phase2_table.md`)
 
 | Policy | Nominal | Randomized | Out-of-distribution |
 |---|---|---|---|
-| Scripted placement expert | _TBD_ | _TBD_ | _TBD_ |
-| PPO (randomized training) | _TBD_ | _TBD_ | _TBD_ |
-| Behaviour cloning (MLP) | _TBD_ | _TBD_ | _TBD_ |
+| Scripted placement expert (privileged, upper bound) | 100 % [96.3, 100] · 0.5 mm | 100 % [96.3, 100] · 0.8 mm | 99 % [94.6, 99.8] · 1.4 mm |
+| **PPO** (randomized training, best checkpoint at 1.375 M steps) | **87 % [79.0, 92.2]** · 4.8 mm | **78 % [68.9, 85.0]** · 5.1 mm | **49 % [39.4, 58.7]** · 5.9 mm |
+| Behaviour cloning (MLP, 300 randomized expert demos) | 87 % [79.0, 92.2] · 3.4 mm | 57 % [47.2, 66.3] · 4.2 mm | 14 % [8.5, 22.1] · 4.6 mm |
+
+**What this shows**
+- **Equal under nominal conditions, very different under perturbation.** BC matches PPO at 87 % nominal but falls to 57 % on the training distribution and 14 % out of distribution; PPO keeps 78 % and 49 %. BC only saw the expert's clean trajectories, so a small error from latency, backlash or noise puts it in states it never saw and errors compound (covariate shift). PPO explored those states during training.
+- **BC places more precisely when it succeeds** (3.4 vs 4.8 mm): it imitates the expert's careful descent, while PPO learned to release from a few centimetres above the slot, sometimes on the first step, which the reward allows. A release-height penalty is the obvious next reward change.
+- **Inference cost is negligible** for both (0.16 ms BC, 0.52 ms PPO per step on a laptop CPU).
+- Limitations: one PPO seed (a second seed is planned), training stopped at 1.875 M of 3 M steps after a shutdown; the best checkpoint was selected on a separate evaluation environment, and the numbers above come from different, fixed evaluation seeds.
 
 **Ablation: which perturbation hurts most?** (ACT trained on nominal data)
 

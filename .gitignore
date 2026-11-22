@@ -9,10 +9,10 @@ ros2_ws/build/
 ros2_ws/install/
 ros2_ws/log/
 # Large generated artefacts (keep results/ tables, ignore raw data and checkpoints)
-data/
-outputs/
-runs/
-wandb/
+/data/
+/outputs/
+/runs/
+/wandb/
 results/plots/
 *.mp4
 !docs/media/*.mp4
