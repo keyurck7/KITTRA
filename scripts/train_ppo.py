@@ -4,6 +4,7 @@
     python scripts/train_ppo.py                         # full run (configs/train/ppo_place.yaml)
     python scripts/train_ppo.py --timesteps 200000      # quick check
     python scripts/train_ppo.py --resume                # continue an interrupted run
+    python scripts/train_ppo.py --seed 1 --out outputs/ppo_place_seed1   # second seed
     tensorboard --logdir runs/
 
 Outputs (outputs/ppo_place/):
@@ -92,9 +93,12 @@ def main() -> None:
     ap.add_argument("--n-envs", type=int, default=None)
     ap.add_argument("--device", default="cpu")
     ap.add_argument("--resume", action="store_true", help="continue from the newest checkpoint in --out")
+    ap.add_argument("--seed", type=int, default=None, help="override the config seed (for multi-seed runs)")
     args = ap.parse_args()
 
     cfg = yaml.safe_load(args.config.read_text())
+    if args.seed is not None:
+        cfg["seed"] = args.seed
     n_envs = args.n_envs or cfg["n_envs"]
     total = args.timesteps or cfg["total_timesteps"]
     ckpt_freq = int(cfg.get("checkpoint_freq", 100_000))
