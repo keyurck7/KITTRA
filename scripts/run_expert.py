@@ -6,7 +6,7 @@
     python scripts/run_expert.py --episodes 50 --config randomized   # expert under perturbations
     python scripts/run_expert.py --episodes 3 --video out/expert.mp4 # save a demo video
 
-Results are written to results/phase1/expert_<config>.json.
+Headless runs write results/phase1/expert_<config>.json; --render/--video demo runs do not.
 """
 from __future__ import annotations
 
@@ -30,6 +30,7 @@ def main() -> None:
     ap.add_argument("--render", action="store_true", help="open the MuJoCo viewer")
     ap.add_argument("--video", type=Path, default=None, help="save an MP4 of all episodes (overhead camera)")
     ap.add_argument("--out", type=Path, default=Path("results/phase1"))
+    ap.add_argument("--no-save", action="store_true", help="do not write the results JSON")
     args = ap.parse_args()
 
     render_mode = "human" if args.render else ("rgb_array" if args.video else None)
@@ -81,10 +82,13 @@ def main() -> None:
     }
     print(json.dumps(summary, indent=2))
 
-    args.out.mkdir(parents=True, exist_ok=True)
-    out_file = args.out / f"expert_{Path(str(args.config)).stem}.json"
-    out_file.write_text(json.dumps({"summary": summary, "episodes": episodes}, indent=2))
-    print(f"wrote {out_file}")
+    if args.render or args.video or args.no_save:
+        print("demo run: results not saved (benchmark files are written by headless runs only)")
+    else:
+        args.out.mkdir(parents=True, exist_ok=True)
+        out_file = args.out / f"expert_{Path(str(args.config)).stem}.json"
+        out_file.write_text(json.dumps({"summary": summary, "episodes": episodes}, indent=2))
+        print(f"wrote {out_file}")
 
     if args.video and frames:
         import imageio.v2 as imageio

@@ -3,6 +3,7 @@ env_config: randomized       # train under domain randomization + sensor/actuato
 eval_config: randomized
 n_envs: 8
 total_timesteps: 3000000
+checkpoint_freq: 100000     # save a resumable checkpoint every 100k steps
 seed: 0
 ppo:
   n_steps: 1024              # per env -> 8192 samples per update

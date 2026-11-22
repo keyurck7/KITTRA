@@ -3,11 +3,14 @@ PY      ?= python
 DEVICE  ?= cuda
 EPISODES ?= 100
 
-.PHONY: help install install-train test test-fast view expert bench ros-build sim demo \
+.PHONY: help status resume-ppo install install-train test test-fast view expert bench ros-build sim demo \
         data train-act train-diffusion train-matrix train-ppo train-bc eval-experts eval-place eval-il eval-ablation results clean
 
 help:
 	@grep -E '^[a-zA-Z_-]+:.*?## ' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  %-16s %s\n", $$1, $$2}'
+
+status: ## what has finished so far and what to run next
+	$(PY) scripts/status.py
 
 install: ## Phase 1 dependencies + editable install
 	$(PY) -m pip install -r requirements-sim.txt && $(PY) -m pip install -e .
@@ -58,8 +61,11 @@ train-matrix: ## full matrix {ACT, Diffusion} x {nominal, randomized 50/100/200}
 	for ds in kittra_nominal kittra_randomized kittra_randomized_50 kittra_randomized_100; do \
 	  for p in act diffusion; do $(PY) scripts/train_lerobot.py --config configs/train/$$p.yaml --dataset $$ds --device $(DEVICE); done; done
 
-train-ppo: ## PPO placement skill (CPU)
+train-ppo: ## PPO placement skill (CPU), checkpoints every 100k steps
 	$(PY) scripts/train_ppo.py --config configs/train/ppo_place.yaml
+
+resume-ppo: ## continue an interrupted PPO run
+	$(PY) scripts/train_ppo.py --config configs/train/ppo_place.yaml --resume
 
 train-bc: ## behaviour-cloning placement baseline
 	$(PY) scripts/train_bc_place.py --config configs/train/bc_place.yaml

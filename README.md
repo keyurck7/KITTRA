@@ -103,7 +103,7 @@ kittra/
 │   ├── bc.py                          # behaviour-cloning MLP
 │   ├── evaluation.py  metrics.py  results.py
 ├── scripts/
-│   ├── view_scene.py  run_expert.py  benchmark_sim.py                     # Phase 1
+│   ├── view_scene.py  run_expert.py  benchmark_sim.py  status.py          # Phase 1 + progress
 │   ├── record_lerobot_dataset.py  train_lerobot.py  train_ppo.py          # Phase 2
 │   └── train_bc_place.py  evaluate.py  make_results_table.py
 ├── notebooks/train_lerobot_colab.ipynb
@@ -429,7 +429,9 @@ Full pick-and-place from pixels is very sample-inefficient for RL, so RL is appl
 **Behaviour cloning baseline:** an MLP with the same observation/action spaces, trained on successful demonstrations from the scripted placement expert. Same env, same evaluation: a fair IL-vs-RL comparison.
 
 ```bash
-make train-ppo          # CPU, ~hours for 3 M steps; --timesteps 200000 for a quick check
+make train-ppo          # CPU, ~3 h for 3 M steps; checkpoints every 100k steps
+make resume-ppo         # continue after a shutdown or Ctrl+C
+make status             # what has finished, what to run next
 make train-bc
 tensorboard --logdir runs/
 ```
