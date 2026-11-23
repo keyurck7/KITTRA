@@ -422,7 +422,7 @@ pip install -r requirements-train.txt && pip install -e .               # LeRobo
 nohup bash scripts/run_il_pipeline.sh > logs/pipeline.log 2>&1 &
 ```
 
-ACT trains at about 20 steps/s (batch 8) and needs under 1 GB of GPU memory on an RTX A6000, so several runs share one GPU.
+Measured on an RTX A6000 (LeRobot 0.7.0): ACT ~20 steps/s at batch 8 (52 M parameters, < 1 GB), Diffusion Policy ~4 steps/s at batch 32 (278 M parameters, 5.5 GB). ACT trains for 100 k steps, Diffusion for 50 k (~43 epochs over the 200-demo dataset), so all four runs of a stage share one GPU.
 
 ## 2.5 RL vs. behaviour cloning: the placement skill
 

@@ -1,8 +1,10 @@
 # Diffusion Policy — passed to `lerobot-train` by scripts/train_lerobot.py.
 policy_type: diffusion
-steps: 100000
+# 50k steps x batch 32 = ~43 epochs over the 200-demo dataset (~37k frames).
+# Measured on an RTX A6000 with LeRobot 0.7.0: ~4 steps/s, 278M parameters, 5.5 GB -> ~3.5 h per run.
+steps: 50000
 batch_size: 32
-save_freq: 20000
+save_freq: 10000
 log_freq: 200
 num_workers: 4
 seed: 1000

@@ -1,5 +1,6 @@
 # ACT (Action Chunking Transformer) — passed to `lerobot-train` by scripts/train_lerobot.py.
 policy_type: act
+# Measured on an RTX A6000 with LeRobot 0.7.0: ~20 steps/s, 52M parameters, <1 GB -> ~1.5 h per run.
 steps: 100000
 batch_size: 8
 save_freq: 20000
