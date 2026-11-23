@@ -62,7 +62,11 @@ jobs:
           source ros2_ws/install/setup.bash
           ros2 launch kittra_bringup sim.launch.py rviz:=false publish_images:=false autopilot:=expert &
           LAUNCH_PID=$!
-          sleep 15
-          timeout 20 ros2 topic echo --once /joint_states
-          timeout 20 ros2 topic echo --once /kittra/scene_markers > /dev/null
+          # Wait (up to 90 s) for the bridge to start publishing instead of a fixed sleep.
+          for i in $(seq 1 45); do
+            ros2 topic list 2>/dev/null | grep -q '^/kittra/scene_markers$' && break
+            sleep 2
+          done
+          timeout 30 ros2 topic echo --once /joint_states sensor_msgs/msg/JointState
+          timeout 30 ros2 topic echo --once /kittra/scene_markers visualization_msgs/msg/MarkerArray > /dev/null
           kill $LAUNCH_PID
