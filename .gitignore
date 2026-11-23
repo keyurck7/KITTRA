@@ -13,7 +13,6 @@ ros2_ws/log/
 /outputs/
 /runs/
 /wandb/
-results/plots/
 *.mp4
 !docs/media/*.mp4
 .mypy_cache/

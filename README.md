@@ -492,19 +492,36 @@ ros2 launch kittra_bringup sim_policy.launch.py policy_type:=act env_config:=ran
 | ACT | _TBD_ | _TBD_ | _TBD_ |
 | Diffusion Policy | _TBD_ | _TBD_ | _TBD_ |
 
-**Placement skill** — success rate with 95 % CI, and mean final placement error; 100 fixed-seed episodes per cell (`results/phase2_table.md`)
+**Placement skill** — success rate with 95 % CI, and mean final placement error; 100 fixed-seed episodes per cell (`results/phase2_ppo_training.md`)
+
+![PPO learning curves and final evaluation](results/plots/ppo_training_summary.png)
 
 | Policy | Nominal | Randomized | Out-of-distribution |
 |---|---|---|---|
-| Scripted placement expert (privileged, upper bound) | 100 % [96.3, 100] · 0.5 mm | 100 % [96.3, 100] · 0.8 mm | 99 % [94.6, 99.8] · 1.4 mm |
-| **PPO** (randomized training, best checkpoint at 1.375 M steps) | **87 % [79.0, 92.2]** · 4.8 mm | **78 % [68.9, 85.0]** · 5.1 mm | **49 % [39.4, 58.7]** · 5.9 mm |
-| Behaviour cloning (MLP, 300 randomized expert demos) | 87 % [79.0, 92.2] · 3.4 mm | 57 % [47.2, 66.3] · 4.2 mm | 14 % [8.5, 22.1] · 4.6 mm |
+| Scripted placement expert (privileged, upper bound) | 100 % [96, 100] · 0.5 mm | 100 % [96, 100] · 0.8 mm | 99 % [95, 100] · 1.4 mm |
+| PPO seed 0 (checkpoint at 1.38 M steps) | 87 % [79, 92] · 4.8 mm | 78 % [69, 85] · 5.1 mm | 49 % [39, 59] · 5.9 mm |
+| PPO seed 1 (checkpoint at 2.38 M steps) | 97 % [92, 99] · 5.1 mm | 90 % [83, 94] · 4.8 mm | 57 % [47, 66] · 5.4 mm |
+| **PPO, mean of 2 seeds** | **92 %** | **84 %** | **53 %** |
+| Behaviour cloning (MLP, 300 randomized expert demos) | 87 % [79, 92] · 3.4 mm | 57 % [47, 66] · 4.2 mm | 14 % [9, 22] · 4.6 mm |
+
+**Training cost and growth** (seed 1, complete 3 M-step run; 8 parallel environments on a laptop CPU)
+
+| | Value |
+|---|---|
+| Environment steps | 3,000,000 |
+| Training episodes (one episode = one placement attempt, ending at release) | 657,289 (≈ 4.6 steps each) |
+| Wall-clock time | 5.4 h |
+| 50 % / 80 % / 90 % success first reached | 525 k steps (194 k episodes) / 950 k (294 k) / 2.08 M (508 k) |
+| Best in-training evaluation | 100 % (50 episodes) at 2.38 M steps |
+
+Seed 0 was stopped at 1.875 M steps by a shutdown; it reached 50 % at 500 k and 80 % at 1.23 M steps and never sustained 90 %.
 
 **What this shows**
-- **Equal under nominal conditions, very different under perturbation.** BC matches PPO at 87 % nominal but falls to 57 % on the training distribution and 14 % out of distribution; PPO keeps 78 % and 49 %. BC only saw the expert's clean trajectories, so a small error from latency, backlash or noise puts it in states it never saw and errors compound (covariate shift). PPO explored those states during training.
-- **BC places more precisely when it succeeds** (3.4 vs 4.8 mm): it imitates the expert's careful descent, while PPO learned to release from a few centimetres above the slot, sometimes on the first step, which the reward allows. A release-height penalty is the obvious next reward change.
-- **Inference cost is negligible** for both (0.16 ms BC, 0.52 ms PPO per step on a laptop CPU).
-- Limitations: one PPO seed (a second seed is planned), training stopped at 1.875 M of 3 M steps after a shutdown; the best checkpoint was selected on a separate evaluation environment, and the numbers above come from different, fixed evaluation seeds.
+- **Equal under nominal conditions, very different under perturbation.** BC matches PPO seed 0 at 87 % nominal but falls to 57 % on the training distribution and 14 % out of distribution; PPO averages 84 % and 53 %. BC only saw the expert's clean trajectories, so a small error from latency, backlash or noise puts it in states it never saw and errors compound (covariate shift). PPO explored those states during training.
+- **Seed variance is real:** 87 % vs 97 % nominal between two PPO seeds with identical settings, which is why results are reported per seed and averaged.
+- **Most of the learning happens early:** 80 % success after about 1 M steps; the last 2 M steps add about 10 points.
+- **BC places more precisely when it succeeds** (3.4 vs ~5 mm): it imitates the expert's careful descent, while PPO learned to release from a few centimetres above the slot, which the reward allows. A release-height penalty is the obvious next reward change.
+- **Out-of-distribution remains the weak point** (53 % for PPO): the held-out ranges are wider than anything trained on, which is exactly what Phase 3's measured (instead of guessed) randomization ranges should address.
 
 **Ablation: which perturbation hurts most?** (ACT trained on nominal data)
 
