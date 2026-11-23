@@ -42,18 +42,23 @@ jobs:
         shell: bash
     steps:
       - uses: actions/checkout@v4
-      - name: Install Python dependencies
+      - name: Install Python dependencies (venv, same as the laptop setup)
         run: |
-          apt-get update && apt-get install -y python3-pip libosmesa6
-          pip install --break-system-packages -r requirements-sim.txt
-          pip install --break-system-packages -e .
+          apt-get update && apt-get install -y python3-venv python3-pip python3-colcon-common-extensions libosmesa6
+          python3 -m venv /opt/venv --system-site-packages
+          /opt/venv/bin/pip install -U pip
+          /opt/venv/bin/pip install -c constraints-ubuntu24.txt -r requirements-sim.txt
+          /opt/venv/bin/pip install -c constraints-ubuntu24.txt -e .
       - name: Build workspace
         run: |
           source /opt/ros/jazzy/setup.bash
-          cd ros2_ws && colcon build --symlink-install
+          source /opt/venv/bin/activate
+          cd ros2_ws && python -m colcon build --symlink-install
+          head -1 install/kittra_bridge/lib/kittra_bridge/mujoco_bridge
       - name: Bridge publishes joint states
         run: |
           source /opt/ros/jazzy/setup.bash
+          source /opt/venv/bin/activate
           source ros2_ws/install/setup.bash
           ros2 launch kittra_bringup sim.launch.py rviz:=false publish_images:=false autopilot:=expert &
           LAUNCH_PID=$!
