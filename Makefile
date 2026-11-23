@@ -89,6 +89,9 @@ eval-ablation: ## single-perturbation ablation for the nominal-trained ACT polic
 	$(PY) scripts/evaluate.py --policy-type act --policy outputs/act_nominal/checkpoints/last/pretrained_model \
 	  --name act_nominal_200 --train-data nominal --n-demos 200 --conditions ablation --episodes $(EPISODES) --device $(DEVICE)
 
+plot-ppo: ## PPO learning curves, final-eval chart and training summary (results/plots, results/phase2_ppo_training.md)
+	$(PY) scripts/plot_ppo_training.py
+
 results: ## build results/phase2_table.md and plots
 	$(PY) scripts/make_results_table.py --runs results/runs --out results/phase2_table.md --plots results/plots
 
