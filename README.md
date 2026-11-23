@@ -414,6 +414,16 @@ python scripts/train_lerobot.py --config configs/train/diffusion.yaml --dataset 
 make train-matrix                 # {ACT, Diffusion} x {nominal, randomized 50/100/200}
 ```
 
+**On the GPU server (unattended):** `scripts/run_il_pipeline.sh` records the four datasets, trains the eight runs four at a time on one GPU, evaluates every checkpoint (plus the ablation) and builds the results table. Every stage skips finished work, so it can simply be restarted after an interruption.
+
+```bash
+python3 -m venv ~/venvs/kittra && source ~/venvs/kittra/bin/activate   # clean venv, no system packages
+pip install -r requirements-train.txt && pip install -e .               # LeRobot 0.7.0 (pinned, verified)
+nohup bash scripts/run_il_pipeline.sh > logs/pipeline.log 2>&1 &
+```
+
+ACT trains at about 20 steps/s (batch 8) and needs under 1 GB of GPU memory on an RTX A6000, so several runs share one GPU.
+
 ## 2.5 RL vs. behaviour cloning: the placement skill
 
 Full pick-and-place from pixels is very sample-inefficient for RL, so RL is applied where it is strongest: **placing an already-grasped cube precisely on the kit slot**.

@@ -4,7 +4,7 @@
 #   -c constraints-ubuntu24.txt   so pip keeps NumPy 1.26, which ROS 2 Jazzy and Ubuntu's SciPy need.
 -r requirements-sim.txt
 torch>=2.2
-lerobot[dataset,training]>=0.4   # dataset: PyAV + datasets; training: accelerate (LeRobot >= 0.7)
+lerobot[dataset,training]==0.7.0   # verified on the GPU server; dataset: PyAV, training: accelerate
 stable-baselines3>=2.3   # not [extra]: it adds a second OpenCV build and Atari packages we don't use
 tqdm
 rich
