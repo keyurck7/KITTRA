@@ -13,6 +13,7 @@ The dataset is read from data/lerobot/<dataset> (or from the Hub with --hf-user 
 from __future__ import annotations
 
 import argparse
+import re
 import shlex
 import shutil
 import subprocess
@@ -20,6 +21,20 @@ import sys
 from pathlib import Path
 
 import yaml
+
+
+def supported_flags(base_cmd: list[str]) -> set[str] | None:
+    """Option names the installed `lerobot-train` accepts (from --help), or None if unknown."""
+    try:
+        out = subprocess.run(base_cmd + ["--help"], capture_output=True, text=True, timeout=120)
+    except (OSError, subprocess.TimeoutExpired):
+        return None
+    flags = set(re.findall(r"--([A-Za-z0-9_.]+)", out.stdout + out.stderr))
+    return flags or None
+
+
+def flag_name(arg: str) -> str:
+    return arg.lstrip("-").split("=", 1)[0]
 
 
 def main() -> None:
@@ -57,9 +72,17 @@ def main() -> None:
         f"--log_freq={cfg['log_freq']}",
         f"--num_workers={cfg['num_workers']}",
         f"--seed={cfg['seed']}",
-        f"--wandb.enable={'true' if args.wandb else 'false'}",
-        *cfg.get("extra_args", []),
     ]
+    optional = list(cfg.get("extra_args", []))
+    flags = supported_flags(cmd[:1] if exe else cmd[:3])
+    # Experiment tracking: LeRobot <= 0.4 uses Weights & Biases, newer versions use trackio.
+    tracker = "wandb.enable" if flags is None or "wandb.enable" in flags else "trackio.enable"
+    optional.append(f"--{tracker}={'true' if args.wandb else 'false'}")
+    for arg in optional:
+        if flags is not None and flag_name(arg) not in flags:
+            print(f"note: this LeRobot version has no {flag_name(arg)}; skipping {arg}")
+            continue
+        cmd.append(arg)
     print(" ".join(shlex.quote(c) for c in cmd))
     if args.dry_run:
         return

@@ -34,6 +34,10 @@ class LeRobotPolicy:
 
         from kittra_learning import lerobot_compat as lc
 
+        if not Path(path).is_dir():
+            raise FileNotFoundError(
+                f"{path} is not a checkpoint directory (expected .../checkpoints/last/pretrained_model); "
+                "did training finish?")
         self.torch = torch
         self.device = torch.device(device)
         self.policy = lc.get_policy_class(policy_type).from_pretrained(str(path))
