@@ -21,7 +21,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-train = ["torch>=2.2", "lerobot>=0.3", "stable-baselines3>=2.3", "tensorboard", "matplotlib", "pandas"]
+train = ["torch>=2.2", "lerobot[dataset]>=0.4", "stable-baselines3>=2.3", "tensorboard", "matplotlib", "pandas"]
 dev = ["pytest>=8.0", "ruff>=0.5"]
 
 [tool.setuptools.packages.find]

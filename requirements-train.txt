@@ -1,9 +1,10 @@
-# Phase 2: simulation + learning (laptop or Colab/Kaggle). Pin lerobot once your pipeline works.
+# Phase 2: simulation + learning (GPU server, Colab/Kaggle). Use a clean venv WITHOUT
+# --system-site-packages there: preinstalled transformers/datasets pin an older huggingface-hub than LeRobot needs.
 # On the Ubuntu laptop (venv with --system-site-packages for ROS 2) also pass
 #   -c constraints-ubuntu24.txt   so pip keeps NumPy 1.26, which ROS 2 Jazzy and Ubuntu's SciPy need.
 -r requirements-sim.txt
 torch>=2.2
-lerobot>=0.3
+lerobot[dataset]>=0.4   # [dataset]: PyAV + datasets for recording/reading LeRobot datasets
 stable-baselines3>=2.3   # not [extra]: it adds a second OpenCV build and Atari packages we don't use
 tqdm
 rich
