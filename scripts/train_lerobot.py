@@ -34,7 +34,7 @@ import yaml
 def has_flag(base_cmd: list[str], name: str) -> bool | None:
     """Whether `lerobot-train --help` mentions --<name> (None if help could not be read)."""
     try:
-        out = subprocess.run(base_cmd + ["--help"], capture_output=True, text=True, timeout=120)
+        out = subprocess.run(base_cmd + ["--help"], capture_output=True, text=True, timeout=120, check=False)
     except (OSError, subprocess.TimeoutExpired):
         return None
     text = out.stdout + out.stderr
@@ -75,7 +75,8 @@ def drop_partial_checkpoints(ckdir: Path) -> None:
             shutil.rmtree(d, ignore_errors=True)
 
 
-def run_with_pruning(cmd: list[str], ckdir: Path, every_s: float = float(os.environ.get("KITTRA_PRUNE_S", 30))) -> None:
+def run_with_pruning(cmd: list[str], ckdir: Path) -> None:
+    every_s = float(os.environ.get("KITTRA_PRUNE_S", "30"))
     stop = threading.Event()
 
     def loop() -> None:
