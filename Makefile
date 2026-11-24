@@ -51,8 +51,11 @@ data: ## record all LeRobot datasets (nominal/randomized x 200, randomized 50/10
 	$(PY) scripts/record_lerobot_dataset.py --config randomized --episodes 50  --overwrite
 	$(PY) scripts/record_lerobot_dataset.py --config randomized --episodes 100 --overwrite
 
+datalab: ## Data Lab server: (re)build the venv if needed and start/continue the IL pipeline (repo in ~/vault)
+	bash scripts/datalab_start.sh
+
 il-pipeline: ## GPU server: datasets -> 8 ACT/Diffusion runs -> evaluation -> table (background, logs/pipeline.log)
-	mkdir -p logs && nohup bash scripts/run_il_pipeline.sh > logs/pipeline.log 2>&1 &
+	mkdir -p logs && nohup bash scripts/run_il_pipeline.sh >> logs/pipeline.log 2>&1 &
 	@echo "started; follow with: tail -f logs/pipeline.log"
 
 train-act: ## ACT on the 200-demo randomized dataset

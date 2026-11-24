@@ -1,10 +1,14 @@
 #!/usr/bin/env bash
 # Phase 2 imitation-learning pipeline, unattended (GPU server).
 #
-#   nohup bash scripts/run_il_pipeline.sh > logs/pipeline.log 2>&1 &
+#   nohup bash scripts/run_il_pipeline.sh >> logs/pipeline.log 2>&1 &
 #   tail -f logs/pipeline.log
+# On the Data Lab server use scripts/datalab_start.sh instead: it keeps the repo in ~/vault (persistent),
+# rebuilds the venv if the server was restarted, and starts this script in the background.
 #
-# Stages (each skips work that already exists, so the script can simply be re-run after an interruption):
+# Resumable: finished datasets, runs (outputs/<run>/DONE) and evaluations (results/runs/<name>/<cond>.json)
+# are skipped, and an interrupted training run continues from its last checkpoint. After any stop, run it again.
+# Stages:
 #   1. record the four LeRobot datasets          (nominal 200, randomized 200 / 100 / 50)
 #   2. train ACT + Diffusion on the 200-demo datasets, 4 runs in parallel on one GPU
 #   3. train ACT + Diffusion on the 50/100-demo datasets, 4 runs in parallel
@@ -15,30 +19,33 @@
 # STAGES (default "1 2 3 4 5"), e.g.  STAGES="4 5" bash scripts/run_il_pipeline.sh
 set -uo pipefail
 cd "$(dirname "$0")/.."
+# Everything below runs inside main(), which bash parses completely before running it: a `git pull` that changes
+# this file while the pipeline runs cannot corrupt the running copy.
+main() {
 export MUJOCO_GL=${MUJOCO_GL:-egl}
 mkdir -p logs
 EPISODES=${EPISODES:-100}
 STAGES=${STAGES:-"1 2 3 4 5"}
 STEPS_ARG=${STEPS:+--steps $STEPS}
-FAILED=0
+FAILFILE="logs/.failed_$$"   # background jobs cannot set a shell variable of this process
+rm -f "$FAILFILE"
 
-stamp() { echo "[$(date '+%H:%M:%S')] $*"; }
+stamp() { echo "[$(date '+%d.%m %H:%M:%S')] $*"; }
 want() { [[ " $STAGES " == *" $1 "* ]]; }
 
 record() {  # config episodes dataset
   if [ -f "data/lerobot/$3/kittra_recording.json" ]; then stamp "dataset $3 exists, skip"; return; fi
   stamp "recording $3"
   python scripts/record_lerobot_dataset.py --config "$1" --episodes "$2" --overwrite > "logs/record_$3.log" 2>&1 \
-    && stamp "recorded $3" || { stamp "FAILED recording $3 (logs/record_$3.log)"; FAILED=1; }
+    && stamp "recorded $3" || { stamp "FAILED recording $3 (logs/record_$3.log)"; touch "$FAILFILE"; }
 }
 
 train() {  # policy dataset
   local run="$1_${2#kittra_}"
-  if [ -d "outputs/$run/checkpoints/last/pretrained_model" ]; then stamp "$run trained, skip"; return; fi
-  rm -rf "outputs/$run"   # a partial run without a final checkpoint is restarted
-  stamp "training $run"
-  python scripts/train_lerobot.py --config "configs/train/$1.yaml" --dataset "$2" $STEPS_ARG > "logs/train_$run.log" 2>&1 \
-    && stamp "trained $run" || { stamp "FAILED training $run (logs/train_$run.log)"; FAILED=1; }
+  if [ -f "outputs/$run/DONE" ]; then stamp "$run trained, skip"; return; fi
+  if [ -d "outputs/$run/checkpoints/last" ]; then stamp "resuming $run"; else stamp "training $run"; fi
+  python scripts/train_lerobot.py --config "configs/train/$1.yaml" --dataset "$2" $STEPS_ARG >> "logs/train_$run.log" 2>&1 \
+    && stamp "trained $run" || { stamp "FAILED training $run (logs/train_$run.log)"; touch "$FAILFILE"; }
 }
 
 evaluate() {  # policy variant [conditions...]
@@ -47,14 +54,18 @@ evaluate() {  # policy variant [conditions...]
   [ -d "$ck" ] || { stamp "no checkpoint for ${p}_$d, skip eval"; return; }
   local data=${d%%_*} n
   n=$(echo "$d" | grep -oE '[0-9]+$' || echo 200)
-  local name="${p}_${data}_${n}"
-  stamp "evaluating $name ($*)"
+  local name="${p}_${data}_${n}" todo=() c
+  for c in "$@"; do [ -f "results/runs/$name/$c.json" ] || todo+=("$c"); done
+  [ ${#todo[@]} -gt 0 ] || { stamp "$name ($*) evaluated, skip"; return; }
+  [ -f "outputs/${p}_$d/DONE" ] || { stamp "${p}_$d not finished, skip eval"; return; }
+  stamp "evaluating $name (${todo[*]})"
   python scripts/evaluate.py --policy-type "$p" --policy "$ck" --name "$name" --train-data "$data" --n-demos "$n" \
-    --conditions "$@" --episodes "$EPISODES" --device cuda > "logs/eval_${name}_$1.log" 2>&1 \
-    && stamp "evaluated $name ($*)" || { stamp "FAILED eval $name (logs/eval_${name}_$1.log)"; FAILED=1; }
+    --conditions "${todo[@]}" --episodes "$EPISODES" --device cuda >> "logs/eval_${name}_$1.log" 2>&1 \
+    && stamp "evaluated $name (${todo[*]})" || { stamp "FAILED eval $name (logs/eval_${name}_$1.log)"; touch "$FAILFILE"; }
 }
 
 if want 1; then
+  stamp "== pipeline start (host $(hostname), stages: $STAGES) =="
   stamp "== stage 1: datasets =="
   # Sequential on purpose: ~2 s per episode, and parallel writers would share the Hugging Face cache.
   record nominal 200 kittra_nominal
@@ -91,4 +102,7 @@ if want 5; then
     > logs/results.log 2>&1 && cat results/phase2_table.md
 fi
 
-[ "$FAILED" = 0 ] && stamp "PIPELINE DONE" || stamp "PIPELINE DONE WITH FAILURES (see FAILED lines above)"
+[ ! -e "$FAILFILE" ] && stamp "PIPELINE DONE" || stamp "PIPELINE DONE WITH FAILURES (see FAILED lines above)"
+}
+main "$@"
+exit

@@ -5,6 +5,7 @@
 -r requirements-sim.txt
 torch>=2.2
 lerobot[dataset,training,diffusion]==0.7.0   # verified on the GPU server; dataset: PyAV, training: accelerate, diffusion: diffusers
+transformers   # imported by LeRobot 0.7.0 but not declared by these extras (5.x verified)
 stable-baselines3>=2.3   # not [extra]: it adds a second OpenCV build and Atari packages we don't use
 tqdm
 rich

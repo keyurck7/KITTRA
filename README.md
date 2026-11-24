@@ -414,13 +414,17 @@ python scripts/train_lerobot.py --config configs/train/diffusion.yaml --dataset 
 make train-matrix                 # {ACT, Diffusion} x {nominal, randomized 50/100/200}
 ```
 
-**On the GPU server (unattended):** `scripts/run_il_pipeline.sh` records the four datasets, trains the eight runs four at a time on one GPU, evaluates every checkpoint (plus the ablation) and builds the results table. Every stage skips finished work, so it can simply be restarted after an interruption.
+**On the GPU server (unattended):** `scripts/run_il_pipeline.sh` records the four datasets, trains the eight runs four at a time on one GPU, evaluates every checkpoint (plus the ablation) and builds the results table. It is built to survive the server being stopped: finished datasets, runs (`outputs/<run>/DONE`) and evaluations are skipped, an interrupted run resumes from its last checkpoint (`lerobot-train --resume=true`), and old checkpoints are pruned while training so each run keeps one checkpoint on disk (finished runs keep only the weights).
+
+On the SRH Data Lab JupyterHub only `~/vault` is persistent, so the repository lives there and `scripts/datalab_start.sh` rebuilds the venv after a server restart and starts the pipeline:
 
 ```bash
-python3 -m venv ~/venvs/kittra && source ~/venvs/kittra/bin/activate   # clean venv, no system packages
-pip install -r requirements-train.txt && pip install -e .               # LeRobot 0.7.0 (pinned, verified)
-nohup bash scripts/run_il_pipeline.sh > logs/pipeline.log 2>&1 &
+git clone https://github.com/keyurck7/KITTRA.git ~/vault/kittra    # once
+bash ~/vault/kittra/scripts/datalab_start.sh                         # after every server start
+tail -f ~/vault/kittra/logs/pipeline.log
 ```
+
+Elsewhere: `python3 -m venv ~/venvs/kittra && pip install -r requirements-train.txt && pip install -e . && make il-pipeline` (clean venv, no system packages).
 
 Measured on an RTX A6000 (LeRobot 0.7.0): ACT ~20 steps/s at batch 8 (52 M parameters, < 1 GB), Diffusion Policy ~4 steps/s at batch 32 (278 M parameters, 5.5 GB). ACT trains for 100 k steps, Diffusion for 50 k (~43 epochs over the 200-demo dataset), so all four runs of a stage share one GPU.
 
